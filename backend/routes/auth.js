@@ -38,7 +38,6 @@ router.post('/createuser',[
                 id:user.id
             }
         }
-        
         success = true;
         const auth_token = jwt.sign(data, secret);
         res.json({success,auth_token});
@@ -92,6 +91,41 @@ router.post('/getuser',fetchUser,async (req,res)=>{
         const userId = req.user.id;
         const user = await User.findById(userId).select("-password");
         res.send(user);
+    }
+    catch(error){
+        console.log(error.message);
+        res.status(500).send("Internal Server Error, Bad Request 500")
+    }
+})
+// Route 4 : Getting user data using POST and updating "/api/auth/update"
+router.post('/update',fetchUser,async (req,res)=>{
+    try{
+        const userId = req.user.id;
+        const user = await User.findById(userId).select("-password");
+        let dbuser = await User.findOneAndUpdate({email:user.email} , {address:req.body.address, pincode:req.body.pincode, contact:req.body.contact, name:req.body.name})
+        const {name,email,address,pincode,contact} = dbuser
+        res.status(200).json({name,email,address,pincode,contact})
+    }
+    catch(error){
+        console.log(error.message);
+        res.status(500).send("Internal Server Error, Bad Request 500")
+    }
+})
+// Route 5 : Getting user data using POST and updating password "/api/auth/updatepassword"
+router.post('/updatepassword',fetchUser,async (req,res)=>{
+    let success = false;
+    try{
+        const userId = req.user.id;
+        const user = await User.findById(userId).select("-password");
+
+        const salt = await bcrypt.genSalt(7);
+        const secPass = await bcrypt.hash(req.body.password,salt);
+
+        let dbuser = await User.findOneAndUpdate({email:user.email} , {password:secPass})
+        const {name,email,address,pincode,contact} = dbuser
+        // console.log(dbuser)
+        success = true
+        res.status(200).json({success})
     }
     catch(error){
         console.log(error.message);
