@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken');
-const secret = "$8ULisLove";
+const secret = process.env.JWT_SECRET;
 
 const fetchUser = async (req,res,next)=>{
     // get user from jwt token
