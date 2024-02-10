@@ -90,7 +90,7 @@ router.post('/getuser',fetchUser,async (req,res)=>{
     try{
         const userId = req.user.id;
         const user = await User.findById(userId).select("-password");
-        res.send(user);
+        res.status(200).send(user);
     }
     catch(error){
         console.log(error.message);
@@ -99,12 +99,13 @@ router.post('/getuser',fetchUser,async (req,res)=>{
 })
 // Route 4 : Getting user data using POST and updating "/api/auth/update"
 router.post('/update',fetchUser,async (req,res)=>{
+    let success = false;
     try{
         const userId = req.user.id;
         const user = await User.findById(userId).select("-password");
-        let dbuser = await User.findOneAndUpdate({email:user.email} , {address:req.body.address, pincode:req.body.pincode, contact:req.body.contact, name:req.body.name})
-        const {name,email,address,pincode,contact} = dbuser
-        res.status(200).json({name,email,address,pincode,contact})
+        let dbuser = await User.findOneAndUpdate({email:user.email} , {address:req.body.address, pincode:req.body.pincode, city:req.body.city,contact:req.body.contact, name:req.body.name})
+        success = true;
+        res.status(200).json({success})
     }
     catch(error){
         console.log(error.message);
@@ -122,8 +123,6 @@ router.post('/updatepassword',fetchUser,async (req,res)=>{
         const secPass = await bcrypt.hash(req.body.password,salt);
 
         let dbuser = await User.findOneAndUpdate({email:user.email} , {password:secPass})
-        const {name,email,address,pincode,contact} = dbuser
-        // console.log(dbuser)
         success = true
         res.status(200).json({success})
     }
