@@ -11,8 +11,9 @@ router.post('/add',fetchUser,async (req,res)=>{
         const userId = req.user.id;
         const user = await User.findById(userId).select("-password");
         let dbuser = await User.findOneAndUpdate({email:user.email} , {cart:req.body.cart})
+        const {cart} = dbuser;
         success = true;
-        res.status(200).json({success,dbuser[cart]})
+        res.status(200).json({success,cart})
     }
     catch(error){
         console.log(error.message);
