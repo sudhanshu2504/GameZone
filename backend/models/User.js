@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
     city : {type: String, default:""},
     pincode : {type: String, default:""},
     contact : {type: String, default:""},
+    cart : {type: String, default:""},
 }, {timestamps : true} )
 const User = mongoose.model('user',UserSchema)
 
